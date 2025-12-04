@@ -1,52 +1,70 @@
-import { View, Text, StyleSheet } from 'react-native';
+import React from "react";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
 
-export default function HomeScreen() {
+export default function HomeScreen({ navigation }) {
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.container}>
       <Text style={styles.title}>Home Screen</Text>
 
-      {/* Quick Actions Section */}
       <Text style={styles.sectionTitle}>Quick Actions</Text>
 
-      <View style={styles.placeholderBox}>
-        <Text style={styles.placeholderText}>Search games</Text>
+      {/* Search games (placeholder, no action yet) */}
+      <View style={styles.card}>
+        <Text style={styles.cardText}>Search games</Text>
       </View>
 
-      <View style={styles.placeholderBox}>
-        <Text style={styles.placeholderText}>Add new game</Text>
-      </View>
+      {/* Add new game - navigates to AddGame screen */}
+      <TouchableOpacity
+        style={styles.card}
+        onPress={() => navigation.navigate("AddGame")}
+      >
+        <Text style={styles.cardText}>Add new game</Text>
+      </TouchableOpacity>
 
-      {/* Recommended Games Section */}
       <Text style={styles.sectionTitle}>Recommended Games</Text>
-
-      <View style={[styles.placeholderBox, styles.recommendedBox]}>
+      <View style={[styles.card, styles.recommendationsCard]}>
         <Text style={styles.placeholderText}>
           Game recommendations will appear here.
         </Text>
       </View>
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: '#fff' },
-
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
-
-  sectionTitle: { fontSize: 18, fontWeight: '600', marginTop: 10, marginBottom: 10 },
-
-  placeholderBox: {
-    height: 60,
-    backgroundColor: '#eee',
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 15,
+  container: {
+    paddingHorizontal: 16,
+    paddingVertical: 24,
+    backgroundColor: "#ffffff",
+    minHeight: "100%",
   },
-
-  recommendedBox: {
+  title: {
+    fontSize: 24,
+    fontWeight: "700",
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    marginBottom: 8,
+  },
+  card: {
+    backgroundColor: "#f2f2f2",
+    borderRadius: 8,
+    paddingVertical: 20,
+    paddingHorizontal: 16,
+    marginBottom: 16,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  cardText: {
+    fontSize: 16,
+  },
+  recommendationsCard: {
     height: 160,
   },
-
-  placeholderText: { color: '#555' },
+  placeholderText: {
+    color: "#777",
+    textAlign: "center",
+  },
 });
