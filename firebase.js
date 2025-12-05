@@ -1,19 +1,36 @@
-// firebase.js
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore";
 
-// Your Firebase config (replace with your own keys)
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "YOUR_KEY",
+  authDomain: "YOUR_KEY",
+  projectId: "YOUR_KEY",
+  storageBucket: "YOUR_KEY",
+  messagingSenderId: "YOUR_KEY",
+  appId: "YOUR_KEY",
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
-
-// Export Firestore database
 export const db = getFirestore(app);
+
+export const saveGame = async (gameData) => {
+  try {
+    await addDoc(collection(db, "games"), gameData);
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
+export const getGames = async () => {
+  try {
+    const snapshot = await getDocs(collection(db, "games"));
+    const results = [];
+    snapshot.forEach((doc) => {
+      results.push({ id: doc.id, ...doc.data() });
+    });
+    return results;
+  } catch (error) {
+    return [];
+  }
+};
