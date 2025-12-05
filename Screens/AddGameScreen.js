@@ -1,19 +1,41 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView } from "react-native";
+import { View, Text, TextInput, Pressable, StyleSheet, Alert } from "react-native";
+import { collection, addDoc } from "firebase/firestore";
+import { db } from "../firebase";
 
 export default function AddGameScreen({ navigation }) {
+
   const [title, setTitle] = useState("");
   const [platform, setPlatform] = useState("");
-  const [hoursPlayed, setHoursPlayed] = useState("");
+  const [hours, setHours] = useState("");
   const [genre, setGenre] = useState("");
 
-  const handleSave = () => {
-    alert("Game saved (UI only, Firebase coming next)");
-    navigation.goBack();
-  };
+  const saveGame = async () => {
+    if (!title || !platform) {
+      Alert.alert("Missing fields", "Game title and platform are required.");
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "games"), {
+        title,
+        platform,
+        hoursPlayed: hours,
+        genre,
+        createdAt: new Date()
+      });
+
+      Alert.alert("Success", "Game saved successfully!");
+      navigation.navigate("Library");
+
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Error", "Could not save game.");
+    }
+  }
 
   return (
-    <ScrollView style={styles.container}>
+    <View style={styles.container}>
       <Text style={styles.header}>Add New Game</Text>
 
       <Text style={styles.label}>Game Title</Text>
@@ -27,7 +49,7 @@ export default function AddGameScreen({ navigation }) {
       <Text style={styles.label}>Platform</Text>
       <TextInput
         style={styles.input}
-        placeholder="e.g., PS5, Xbox, PC, Switch"
+        placeholder="e.g. PS5, Xbox, PC"
         value={platform}
         onChangeText={setPlatform}
       />
@@ -36,59 +58,55 @@ export default function AddGameScreen({ navigation }) {
       <TextInput
         style={styles.input}
         placeholder="Enter hours"
-        keyboardType="numeric"
-        value={hoursPlayed}
-        onChangeText={setHoursPlayed}
+        value={hours}
+        onChangeText={setHours}
       />
 
       <Text style={styles.label}>Genre</Text>
       <TextInput
         style={styles.input}
-        placeholder="e.g., Action, RPG, Sports"
+        placeholder="e.g. Action, RPG"
         value={genre}
         onChangeText={setGenre}
       />
 
-      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-        <Text style={styles.saveButtonText}>Save Game</Text>
-      </TouchableOpacity>
-    </ScrollView>
+      <Pressable style={styles.button} onPress={saveGame}>
+        <Text style={styles.buttonText}>Save Game</Text>
+      </Pressable>
+    </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    backgroundColor: "#fff",
+    padding: 20
   },
   header: {
     fontSize: 26,
     fontWeight: "bold",
-    marginBottom: 20,
+    marginBottom: 20
   },
   label: {
-    fontSize: 16,
-    marginTop: 15,
-    marginBottom: 5,
-    fontWeight: "500",
+    fontSize: 14,
+    marginBottom: 5
   },
   input: {
-    backgroundColor: "#f1f1f1",
-    padding: 12,
-    borderRadius: 8,
-    fontSize: 16,
+    backgroundColor: "#eee",
+    padding: 14,
+    borderRadius: 6,
+    marginBottom: 14
   },
-  saveButton: {
-    backgroundColor: "#222",
-    padding: 15,
-    borderRadius: 10,
-    marginTop: 30,
+  button: {
+    backgroundColor: "#111",
+    padding: 18,
+    borderRadius: 6,
     alignItems: "center",
+    marginTop: 10
   },
-  saveButtonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "600",
-  },
+  buttonText: {
+    color: "white",
+    fontSize: 16
+  }
 });
