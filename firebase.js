@@ -1,36 +1,24 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, getDocs } from "firebase/firestore";
+import { getFirestore, collection, addDoc } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "YOUR_KEY",
-  authDomain: "YOUR_KEY",
-  projectId: "YOUR_KEY",
-  storageBucket: "YOUR_KEY",
-  messagingSenderId: "YOUR_KEY",
-  appId: "YOUR_KEY",
+  apiKey: "AIzaSyBngyeixuBFMdOup933DmrKJpxXqsm-sRo",
+  authDomain: "gametrack-app.firebaseapp.com",
+  projectId: "gametrack-app",
+  storageBucket: "gametrack-app.appspot.com",
+  messagingSenderId: "1062231037366",
+  appId: "1:1062231037366:web:8cab22741a02bf56db1d17"
 };
 
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 
-export const saveGame = async (gameData) => {
+export async function saveGame(gameData) {
   try {
     await addDoc(collection(db, "games"), gameData);
     return true;
   } catch (error) {
+    console.log("Firestore error:", error);
     return false;
   }
-};
-
-export const getGames = async () => {
-  try {
-    const snapshot = await getDocs(collection(db, "games"));
-    const results = [];
-    snapshot.forEach((doc) => {
-      results.push({ id: doc.id, ...doc.data() });
-    });
-    return results;
-  } catch (error) {
-    return [];
-  }
-};
+}

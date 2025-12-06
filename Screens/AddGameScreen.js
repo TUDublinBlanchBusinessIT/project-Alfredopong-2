@@ -9,6 +9,7 @@ export default function AddGameScreen({ navigation }) {
   const [genre, setGenre] = useState("");
 
   const handleSave = async () => {
+    console.log("Save button pressed");
     const gameData = {
       title,
       platform,
