@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { getFirestore, collection, addDoc, onSnapshot } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBngyeixuBFMdOup933DmrKJpxXqsm-sRo",
@@ -11,7 +11,7 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
-export const db = getFirestore(app);
+const db = getFirestore(app);
 
 export async function saveGame(gameData) {
   try {
@@ -21,4 +21,14 @@ export async function saveGame(gameData) {
     console.log("Firestore error:", error);
     return false;
   }
+}
+
+export function listenForGames(callback) {
+  return onSnapshot(collection(db, "games"), (snapshot) => {
+    const games = [];
+    snapshot.forEach((doc) => {
+      games.push({ id: doc.id, ...doc.data() });
+    });
+    callback(games);
+  });
 }
