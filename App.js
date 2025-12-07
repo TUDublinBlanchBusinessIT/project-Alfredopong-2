@@ -8,12 +8,11 @@ import HomeScreen from "./Screens/HomeScreen";
 import LibraryScreen from "./Screens/LibraryScreen";
 import StatsScreen from "./Screens/StatsScreen";
 import ProfileScreen from "./Screens/ProfileScreen";
-import AddGameScreen from "./Screens/AddGameScreen"; // <-- make sure this file exists
+import AddGameScreen from "./Screens/AddGameScreen"; 
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
-// Tabs component (what you had before)
 function MainTabs() {
   return (
     <Tab.Navigator
