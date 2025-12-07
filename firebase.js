@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getFirestore, collection, addDoc, onSnapshot } from "firebase/firestore";
+import { getFirestore, collection, addDoc, onSnapshot, deleteDoc, doc } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBngyeixuBFMdOup933DmrKJpxXqsm-sRo",
@@ -18,7 +18,6 @@ export async function saveGame(gameData) {
     await addDoc(collection(db, "games"), gameData);
     return true;
   } catch (error) {
-    console.log("Firestore error:", error);
     return false;
   }
 }
@@ -31,4 +30,13 @@ export function listenForGames(callback) {
     });
     callback(games);
   });
+}
+
+export async function deleteGame(id) {
+  try {
+    await deleteDoc(doc(db, "games", id));
+    return true;
+  } catch (error) {
+    return false;
+  }
 }

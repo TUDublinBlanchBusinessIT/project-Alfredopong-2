@@ -1,106 +1,97 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator } from "react-native";
-import { listenForGames } from "../firebase";
+import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
+import { listenForGames, deleteGame } from "../firebase";
 
 export default function LibraryScreen() {
   const [games, setGames] = useState([]);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = listenForGames((data) => {
-      setGames(data);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
+    const unsub = listenForGames(setGames);
+    return () => unsub();
   }, []);
 
-  if (loading) {
+  async function handleDelete(id) {
+    await deleteGame(id);
+  }
+
+  function renderItem({ item }) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#000" />
-        <Text>Loading games...</Text>
+      <View style={styles.card}>
+        <Text style={styles.title}>{item.title}</Text>
+        <Text>Platform: {item.platform}</Text>
+        <Text>Hours: {item.hoursPlayed}</Text>
+        <Text>Genre: {item.genre}</Text>
+
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => handleDelete(item.id)}
+        >
+          <Text style={styles.deleteText}>Delete</Text>
+        </TouchableOpacity>
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.header}>Your Game Library</Text>
+    <View style={styles.container}>
+      <Text style={styles.header}>Library</Text>
 
-      {games.map((game) => (
-        <View key={game.id} style={styles.card}>
-          <Text style={styles.title}>{game.title}</Text>
-
-          <View style={styles.row}>
-            <Text style={styles.label}>Platform:</Text>
-            <Text style={styles.value}>{game.platform}</Text>
-          </View>
-
-          <View style={styles.row}>
-            <Text style={styles.label}>Hours Played:</Text>
-            <Text style={styles.value}>{game.hoursPlayed}</Text>
-          </View>
-
-          <View style={styles.row}>
-            <Text style={styles.label}>Genre:</Text>
-            <Text style={styles.value}>{game.genre}</Text>
-          </View>
-
-          <Text style={styles.date}>
-            Added: {new Date(game.createdAt.seconds * 1000).toLocaleDateString()}
-          </Text>
+      {games.length === 0 ? (
+        <View style={styles.placeholderBox}>
+          <Text style={styles.placeholderText}>No games added yet.</Text>
         </View>
-      ))}
-    </ScrollView>
+      ) : (
+        <FlatList
+          data={games}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+        />
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 15,
-    backgroundColor: "#fff"
+    padding: 20,
+    backgroundColor: "#fff",
   },
   header: {
     fontSize: 22,
     fontWeight: "bold",
-    marginBottom: 15
+    marginBottom: 20,
+  },
+  placeholderBox: {
+    height: 120,
+    backgroundColor: "#eee",
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  placeholderText: {
+    color: "#555",
+    fontSize: 16,
   },
   card: {
-    backgroundColor: "#f7f7f7",
-    borderRadius: 10,
+    backgroundColor: "#eee",
     padding: 15,
+    borderRadius: 8,
     marginBottom: 15,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
-    shadowOffset: { width: 0, height: 2 }
   },
   title: {
     fontSize: 18,
     fontWeight: "bold",
-    marginBottom: 8
   },
-  row: {
-    flexDirection: "row",
-    marginBottom: 4
+  deleteButton: {
+    marginTop: 10,
+    backgroundColor: "#222",
+    padding: 10,
+    borderRadius: 6,
+    alignItems: "center",
   },
-  label: {
-    fontWeight: "600",
-    width: 120
+  deleteText: {
+    color: "#fff",
+    fontWeight: "bold",
   },
-  value: {
-    fontWeight: "400"
-  },
-  date: {
-    marginTop: 8,
-    fontSize: 12,
-    color: "#777"
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center"
-  }
 });
